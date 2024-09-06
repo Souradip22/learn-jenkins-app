@@ -5,9 +5,14 @@ pipeline {
             agent any
             steps {
                 sh '''
-                echo "From GIT Jenkins file"
+                echo "BUILD start"
                 ls -la
-                touch container_no.txt
+                node --version
+                npm --version
+
+                npm ci
+                npm run build
+                ls -la
                 '''
             }
         }
