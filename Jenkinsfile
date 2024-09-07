@@ -100,6 +100,29 @@ pipeline {
                 '''
             }
         }
+
+        stage('E2E Prod') {
+            environment {
+                CI_ENVIRONMENT_URL = 'https://cheerful-cassata-6367ef.netlify.app'
+            }
+            agent {
+                docker { 
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report Prod', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+                    
+        }
     }
 
 }
