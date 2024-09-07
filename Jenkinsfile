@@ -12,7 +12,7 @@ pipeline {
         Multi
         line comments
         */
-        /*stage('Build') {
+        stage('Build') {
             agent {
                 docker { 
                     image 'node:18-alpine'
@@ -31,7 +31,7 @@ pipeline {
                 ls -la
                 '''
             }
-        }*/
+        }
         stage('Stage Tests'){
             parallel {
                 stage('Unit test') {
@@ -96,6 +96,7 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploy to production site id : Site Id $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
         }
