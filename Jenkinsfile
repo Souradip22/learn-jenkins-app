@@ -108,7 +108,7 @@ pipeline {
 
         stage('E2E Staging') {
             environment {
-                CI_ENVIRONMENT_URL = $env.STAGING_URL
+                CI_ENVIRONMENT_URL = "$env.STAGING_URL"
             }
             agent {
                 docker { 
