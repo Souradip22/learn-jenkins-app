@@ -155,7 +155,7 @@ pipeline {
             }
         }*/
 
-        stage('E2E Prod') {
+        stage('Deploy Prod') {
             environment {
                 CI_ENVIRONMENT_URL = 'https://cheerful-cassata-6367ef.netlify.app'
             }
