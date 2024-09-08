@@ -77,7 +77,7 @@ pipeline {
                         }
                         post {
                             always {
-                                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report Local', reportTitles: '', useWrapperFileDirectly: true])
                             }
                         }
                     }
@@ -137,7 +137,7 @@ pipeline {
             }
         }
 
-        stage('Deploy prod') {
+        /*stage('Deploy prod') {
             agent {
                 docker { 
                     image 'node:18-alpine'
@@ -153,7 +153,7 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
-        }
+        }*/
 
         stage('E2E Prod') {
             environment {
@@ -167,6 +167,12 @@ pipeline {
             }
             steps {
                 sh '''
+                    node --version
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploy to production site id : Site Id $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
                     npx playwright test --reporter=html
                 '''
             }
