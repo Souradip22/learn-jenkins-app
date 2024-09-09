@@ -34,6 +34,38 @@ pipeline {
             }
         }
 
+        stage('Setup Google Cloud CLI') {
+            environment {
+                GCP_BUCKET = "jenkins-bucket-202409081110"
+            }
+            agent {
+                docker { 
+                    image 'gcr.io/google.com/cloudsdktool/google-cloud-cli:stable'
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([file(credentialsId: 'gcp-secret-file', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh '''
+                        # Print the version of gcloud to ensure the CLI is working
+                        gcloud version
+                        
+                        # Authenticate with the service account
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        
+                        # List the storage buckets
+                        gcloud storage buckets list
+                        
+                        gcloud storage rsync build gs://$GCP_BUCKET
+                    '''
+                }
+                sh '''
+                    gcloud version
+                    gcloud storage ls
+                '''
+            }
+        }
+
         stage('Stage Tests'){
             parallel {
                 stage('Unit test') {
