@@ -57,7 +57,7 @@ pipeline {
                         # List the storage buckets
                         gcloud storage buckets list
                         
-                        gcloud storage rsync build gs://$GCP_BUCKET
+                        gcloud storage rsync build gs://$GCP_BUCKET --recursive
                     '''
                 }
                 sh '''
