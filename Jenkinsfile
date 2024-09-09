@@ -5,6 +5,8 @@ pipeline {
         NETLIFY_SITE_ID = '5e914210-5475-49f3-84f8-6d03a1442329'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         REACT_APP_VERSION = "1.0.$BUILD_ID"
+        REGION='asia-south1'
+        PROJECT_ID = 'jenkins-435017'
     }
 
     stages {
@@ -34,7 +36,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and push a Docker image with Cloud Build') {
             agent {
                 docker { 
                     image 'gcr.io/google.com/cloudsdktool/google-cloud-cli:stable'
@@ -42,6 +44,20 @@ pipeline {
                 }
             }
             steps {
+                withCredentials([file(credentialsId: 'gcp-secret-file', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh '''
+                        # Print the version of gcloud to ensure the CLI is working
+                        gcloud version
+                        
+                        # Authenticate with the service account
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        
+                        gcloud artifacts repositories list --project=$PROJECT_ID --location=$REGION
+
+                        gcloud artifacts repositories create react-app-repo --repository-format=docker \
+                        --location=$REGION --description="Docker repository from CLI"
+                    '''
+                }
                 sh 'docker build -t my-jenkins-app .'
             }
         }
@@ -73,7 +89,7 @@ pipeline {
 
                         # Deploy the service and capture the operation ID
                         gcloud run deploy nginx-container-cloud-run \
-                            --region=asia-south1 \
+                            --region=$REGION \
                             --port=80 \
                             --allow-unauthenticated \
                             --image=nginx:1.26-alpine 
