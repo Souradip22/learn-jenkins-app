@@ -35,6 +35,12 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            agent {
+                docker { 
+                    image 'gcr.io/google.com/cloudsdktool/google-cloud-cli:stable'
+                    reuseNode true
+                }
+            }
             steps {
                 sh 'docker build -t my-jenkins-app .'
             }
