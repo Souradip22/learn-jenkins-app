@@ -37,6 +37,7 @@ pipeline {
         stage('Setup Google Cloud CLI') {
             environment {
                 GCP_BUCKET = "jenkins-bucket-202409081110"
+                CLOUDSDK_CORE_PROJECT = 'jenkins-435017'
             }
             agent {
                 docker { 
