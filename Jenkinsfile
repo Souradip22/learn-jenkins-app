@@ -13,7 +13,7 @@ pipeline {
         Multi
         line comments
         */
-        stage('Build') {
+        stage('Build code') {
             agent {
                 docker { 
                     image 'node:18-alpine'
@@ -34,7 +34,13 @@ pipeline {
             }
         }
 
-        stage('Setup Google Cloud CLI') {
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t my-jenkins-app .'
+            }
+        }
+
+        /*stage('Setup Google Cloud CLI') {
             environment {
                 GCP_BUCKET = "jenkins-bucket-202409081110"
                 CLOUDSDK_CORE_PROJECT = 'jenkins-435017'
@@ -58,6 +64,15 @@ pipeline {
                         gcloud storage buckets list
                         
                         gcloud storage rsync build gs://$GCP_BUCKET --recursive
+
+                        # Deploy the service and capture the operation ID
+                        gcloud run deploy nginx-container-cloud-run \
+                            --region=asia-south1 \
+                            --port=80 \
+                            --allow-unauthenticated \
+                            --image=nginx:1.26-alpine 
+                        
+                        echo "Deployment Completed"
                     '''
                 }
                 sh '''
@@ -65,9 +80,9 @@ pipeline {
                     gcloud storage ls
                 '''
             }
-        }
+        }*/
 
-        stage('Stage Tests'){
+        /*stage('Stage Tests'){
             parallel {
                 stage('Unit test') {
                         agent {
@@ -115,7 +130,7 @@ pipeline {
                         }
                     }
             }
-        } 
+        }*/ 
 
         /*stage('Deploy staging') {
             agent {
@@ -139,7 +154,7 @@ pipeline {
             }
         }*/
 
-        stage('Deploy Staging') {
+        /*stage('Deploy Staging') {
             environment {
                 CI_ENVIRONMENT_URL = 'STAGING_URL_TO_BE_SET'
             }
@@ -165,7 +180,7 @@ pipeline {
                 }
             }
                     
-        }
+        }*/
 
         /*stage('Approval') {
             steps {
@@ -193,7 +208,7 @@ pipeline {
             }
         }*/
 
-        stage('Deploy Prod') {
+        /*stage('Deploy Prod') {
             environment {
                 CI_ENVIRONMENT_URL = 'https://cheerful-cassata-6367ef.netlify.app'
             }
@@ -219,7 +234,7 @@ pipeline {
                 }
             }
                     
-        }
+        }*/
     }
 
 }
