@@ -6,8 +6,8 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         REACT_APP_VERSION = "1.0.$BUILD_ID"
         REGION='asia-south1'
-        PROJECT_ID = 'jenkins-435017'
         IMAGE_NAME = "my-react-app"
+        CLOUDSDK_CORE_PROJECT = 'jenkins-435017'
     }
 
     stages {
@@ -53,16 +53,16 @@ pipeline {
                         # Authenticate with the service account
                         gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
                         
-                        gcloud artifacts repositories list --project=$PROJECT_ID --location=$REGION
+                        gcloud artifacts repositories list --location=$REGION
 
                         ls -la
 
                         # this should not be here - instead create a repo and then point it here
-                        # gcloud artifacts repositories create react-app-repo --project=$PROJECT_ID --repository-format=docker \
+                        # gcloud artifacts repositories create react-app-repo --repository-format=docker \
                         # --location=$REGION --description="Docker repository from CLI"
 
                         # build the code and create a image from Dockerfile and then submit it to Artifact Regitry 
-                        gcloud builds submit --project=$PROJECT_ID --region=asia-east1 --tag gcr.io/$PROJECT_ID/$IMAGE_NAME:$REACT_APP_VERSION .
+                        gcloud builds submit --region=asia-east1 --tag gcr.io/$CLOUDSDK_CORE_PROJECT/$IMAGE_NAME:$REACT_APP_VERSION .
                     '''
                 }
             
@@ -72,7 +72,7 @@ pipeline {
 
         stage('Cloud Run deploy from latest image') {
             environment {
-                IMAGE_ADDRESS = "gcr.io/$PROJECT_ID/$IMAGE_NAME:$REACT_APP_VERSION"
+                IMAGE_ADDRESS = "gcr.io/$CLOUDSDK_CORE_PROJECT/$IMAGE_NAME:$REACT_APP_VERSION"
             }
             agent {
                 docker { 
