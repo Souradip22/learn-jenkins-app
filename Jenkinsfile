@@ -57,6 +57,7 @@ pipeline {
 
                         ls -la
 
+                        # this should not be here - instead create a repo and then point it here
                         # gcloud artifacts repositories create react-app-repo --project=$PROJECT_ID --repository-format=docker \
                         # --location=$REGION --description="Docker repository from CLI"
 
@@ -65,6 +66,36 @@ pipeline {
                     '''
                 }
             
+            }
+        }
+
+
+        stage('Cloud Run deploy from latest image') {
+            environment {
+                IMAGE_ADDRESS = "gcr.io/$PROJECT_ID/$IMAGE_NAME:$REACT_APP_VERSION"
+            }
+            agent {
+                docker { 
+                    image 'gcr.io/google.com/cloudsdktool/google-cloud-cli:stable'
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([file(credentialsId: 'gcp-secret-file', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh '''
+                        # Print the version of gcloud to ensure the CLI is working
+                        gcloud version
+                        
+                        # Authenticate with the service account
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        
+                        gcloud run deploy nginx-container-my-react-app \
+                            --region=asia-south1 \
+                            --port=80 \
+                            --allow-unauthenticated \
+                            --image=$IMAGE_ADDRESS
+                    '''
+                }
             }
         }
 
