@@ -60,6 +60,7 @@ pipeline {
                         # gcloud artifacts repositories create react-app-repo --project=$PROJECT_ID --repository-format=docker \
                         # --location=$REGION --description="Docker repository from CLI"
 
+                        # build the code and create a image from Dockerfile and then submit it to Artifact Regitry 
                         gcloud builds submit --project=$PROJECT_ID --region=asia-east1 --tag gcr.io/$PROJECT_ID/$IMAGE_NAME:$REACT_APP_VERSION .
                     '''
                 }
