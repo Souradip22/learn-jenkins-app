@@ -57,7 +57,7 @@ pipeline {
                         # gcloud artifacts repositories create react-app-repo --project=$PROJECT_ID --repository-format=docker \
                         # --location=$REGION --description="Docker repository from CLI"
 
-                        gcloud builds submit --project=$PROJECT_ID --region=$REGION --tag $REGION-docker.pkg.dev/$PROJECT_ID/react-app-repo/react-image:tag1
+                        gcloud builds submit --project=$PROJECT_ID --region=asia-east1 --tag $REGION-docker.pkg.dev/$PROJECT_ID/react-app-repo/react-image:tag1
                     '''
                 }
             
