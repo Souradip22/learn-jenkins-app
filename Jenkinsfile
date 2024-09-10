@@ -15,7 +15,7 @@ pipeline {
         Multi
         line comments
         */
-        stage('Build code') {
+        /*stage('Build code') {
             agent {
                 docker { 
                     image 'node:18-alpine'
@@ -34,7 +34,7 @@ pipeline {
                 ls -la
                 '''
             }
-        }
+        }*/
 
         stage('Build and push a Docker image with Cloud Build') {
             agent {
